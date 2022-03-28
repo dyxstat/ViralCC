@@ -15,7 +15,7 @@ After installing Anaconda (or miniconda), Users can clone the repository with gi
 git clone https://github.com/dyxstat/ViralCC.git
 ```
 
-Once complete, you can enter the repository folder and then create a HiCBin environment using conda:
+Once complete, you can enter the repository folder and then create a ViralCC environment using conda:
 ```
 # Enter the ViralCC folder
 cd ViralCC
@@ -28,109 +28,69 @@ conda activate ViralCC_env
 ```
 
 ## Initial data preparation
-### 1.Preprocess Raw reads
+### Preprocess raw shotgun and Hi-C reads
 Adaptor sequences are removed by bbduk from the BBTools suite with parameter ‘ktrim=r k=23 mink=11 hdist=1 minlen=50 tpe tbo’ and reads are quality-trimmed using bbduk with parameters ‘trimq=10 qtrim=r ftm=5 minlen=50’. Then, the first 10 nucleotides of each read are trimmed by bbduk with parameter ‘ftl=10’.
-### 2.Shotgun assembly
+### Assemble shotgun reads
 For the shotgun library, de novo metagenome assembly is produced by an assembly software, such as MEGAHIT.
 ```
 megahit -1 SG1.fastq.gz -2 SG2.fastq.gz -o ASSEMBLY --min-contig-len 1000 --k-min 21 --k-max 141 --k-step 12 --merge-level 20,0.95
 ```
-### 3.Align Hi-C paired-end reads to assembled contigs
-Hi-C paired-end reads are mapped to assembled contigs using BWA-MEM with parameters ‘-5SP’. Then, samtools with parameters ‘view -F 0x904’ is applied to remove unmapped reads (0x4) and supplementary (0x800) and secondary (0x100) alignments and then sort BAM files by name.
+### Align Hi-C paired-end reads to assembled contigs
+Hi-C paired-end reads are aligned to assembled contigs using a DNA mapping software, such as BWA MEM. Then, samtools with parameters ‘view -F 0x904’ is applied to remove unmapped reads, supplementary alignments, and secondary alignments. BAM file needs to be sorted by name using 'samtools sort'.
 ```
 bwa index final.contigs.fa
 bwa mem -5SP final.contigs.fa hic_read1.fastq.gz hic_read2.fastq.gz > MAP.sam
 samtools view -F 0x904 -bS MAP.sam > MAP_UNSORTED.bam
-samtools sort MAP_UNSORTED.bam -o . > MAP_SORTED.bam
+samtools sort MAP_UNSORTED.bam -o MAP_SORTED.bam
+```
+### Identify viral contigs from assembled contigs
+Assembled contigs were screened by a viral sequence detection software, such as VirSorter to identify viral contigs.
+```
+wrapper_phage_contigs_sorter_iPlant.pl -f final.contigs.fa --db 1 --wdir virsorter_output --data-dir virsorter-data
 ```
 
 
-
-
-
-## HiCBin analysis
-### Implement the binning pipeline of HiCBin 
+## Implement the ViralCC pipeline
 ```
-python ./hicbin.py pipeline [Parameters] FASTA_file BAM_file TAX_file COV_file OUTPUT_directory
+python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_directory
 ```
-#### Parameters
+### Parameters
 ```
--e: Case-sensitive enzyme name. Use multiple times for multiple enzymes 
-    (Optional; If no enzyme is input, HiCzin_LC mode will be automatically employed to do normalization)
 --min-len: Minimum acceptable contig length (default 1000)
 --min-mapq: Minimum acceptable alignment quality (default 30)
 --min-match: Accepted alignments must be at least N matches (default 30)
---min-signal: Minimum acceptable signal (default 2)
---thres: Maximum acceptable fraction of incorrectly identified valid contacts in spurious contact detection (default 0.05)
---min-binsize: Minimum bin size used in output (default 150000)
+--min-k: Lower bound of k for determining the host poximity graph (default 4)
+--random-seed: Random seed for the Leiden clustering (default 42)
 --cover: Cover existing files
 -v: Verbose output
 ```
-#### Input File
-
-* *FASTA_file*: a fasta file of the assembled contig (e.g. final.contigs.fa)
-* *BAM_file*: a bam file of the Hi-C alignment (e.g. MAP_SORTED.bam)
-* *TAX_file*: a csv file of contigs' taxonomy assignment by TAXAassign (e.g. contig_tax.csv)
-* *COV_file*: a txt file of contigs' coverage information computed by script: ‘jgi summarize bam contig depths’ from MetaBAT2 (e.g. depth.txt)
-
-
-#### Example
+### Input File
 ```
-python ./hicbin.py pipeline -e HindIII -e NcoI -v final.contigs.fa MAP_SORTED.bam contig_tax.csv depth.txt out
-```
-If the restriction enzymes employed in the experiment are unspecified, use
-```
-python ./hicbin.py pipeline -v final.contigs.fa MAP_SORTED.bam contig_tax.csv depth.txt out
-```
-The results of the HiCBin software are all in the 'out' directory. The initial draft genomic bins are in 'out/BIN' and 'hicbin.log' file contains the specific implementation information of HiCBin.
-
-### Implement the post-processing step of HiCBin
-Initial draft genomic bins are assessed using [CheckM](https://github.com/Ecogenomics/CheckM).
-Then the post-processing step of HiCBin is conducted for partially contaminated bins with completeness larger than 50% and contamination larger than 10%.
-in order to purify the contaminated bins. Please make sure that the OUTPUT_directory is the same as your directory in the pipeline action.
-```
-python ./hicbin.py recluster --cover -v FASTA_file Contaminated_Bins_file OUTPUT_directory
-```
-#### Input File
-* *FASTA_file*: a fasta file of the assembled contig (e.g. final.contigs.fa).
-* *Contaminated_Bins_file*: a csv file of the names of the partially contaminated bins; Bin names are arranged in columns and *don't include the file formats .fa at the end of each name*
-
-Example of a Contaminated_Bins_file:
-```
-BIN0000
-BIN0001
-BIN0005
-...
+* FASTA_file: a fasta file of the assembled contig (e.g. final.contigs.fa)
+* BAM_file: a bam file of the Hi-C alignment (e.g. MAP_SORTED.bam)
+* VIRAL_file: a txt file containing the names of identified viral contigs in one column **without header** (e.g. viral_contigs.txt)
 ```
 
-#### Example
+### Output File
 ```
-python ./hicbin.py recluster --cover -v final.contigs.fa contaminated_bins.csv out
+* VIRAL_BIN: folder containing the fasta files of draft viral bins
+* cluster_viral_contig.txt: clustering results with 2 columns, the first is the viral contig name, and the second is the group number.
+* viral_contig_info.csv: information of viral contigs with three columns (contig name, contig length, and GC-content)
+* prokaryotic_contig_info.csv: information of non-viral contigs with three columns (contig name, contig length, and GC-content)
+* viralcc.log: log file of ViralCC
 ```
-The generated sub bins are in 'out/SUB_BIN' and the specific implementation details of the post-processing step will be added to the 'hicbin.log' file.
 
-### Merge the generated bins from BIN and SUB_BIN
+
+### Example
 ```
-python ./merge_bins.py contaminated_bins.csv out
+python ./viralcc.py pipeline -v final.contigs.fa MAP_SORTED.bam viral_contigs.txt out
 ```
-Then, all bins are merged in out/FINAL_BIN directory, which are the final bins generated by HiCBin.
+
+The results of the ViralCC software are all in the 'out' directory. The draft viral bins are in 'out/VIRAL_BIN' and 'viralcc.log' file contains the specific implementation information of ViralCC.
+
 
 ## Contacts and bug reports
 If you have any questions or suggestions, welcome to contact Yuxuan Du (yuxuandu@usc.edu).
-
-## Citation
-If you use our HiCBin software, please cite the following papers:
-
-Du, Y., Laperriere, S.M., Fuhrman, J., Sun, F.: Normalizing Metagenomic Hi-C Data and Detecting Spurious Contacts Using Zero-Inflated Negative Binomial Regression. J Comput Biol. 29, 106–120 (2022). doi:10.1089/cmb.2021.0439
-
-Du, Y., Sun, F. HiCBin: binning metagenomic contigs and recovering metagenome-assembled genomes using Hi-C contact maps. Genome Biol 23, 63 (2022). https://doi.org/10.1186/s13059-022-02626-w
-
-## Acknowlegement
-We employ some coding sections from bin3C [1] and solidbin [2] in our pipeline. If there are some interest conflicts, please contact Yuxuan Du (yuxuandu@usc.edu).
-
-[1] DeMaere, M., Darling, A. bin3C: exploiting Hi-C sequencing data to accurately resolve metagenome-assembled genomes. Genome Biology 20, 46 (2019).
-
-[2] Wang, Ziye and Wang, Zhengyang and Lu, Yang Young and Sun, Fengzhu and Zhu, Shanfeng. SolidBin: improving metagenome binning with semi-supervised normalized cut. Bioinformatics 35, 21 (2019).
 
 
 ## Copyright and License Information
