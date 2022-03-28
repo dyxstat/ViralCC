@@ -1,12 +1,14 @@
 # ViralCC: leveraging metagenomic proximity-ligation to retrieve complete viral genomes and reveal active co-host systems
 
 ## Introduction
-ViralCC is a new open-source metagenomic Hi-C-based binning pipeline to recover complete viral genomes. 
-
+ViralCC is a new open-source metagenomic Hi-C-based binning pipeline to recover complete viral genomes and detect. 
+ViralCC not only considers the Hi-C interaction graph, but also puts forward a novel host proximity graph of viral contigs 
+as a complementary source of information to the remarkably sparse Hi-C interaction map. The two graphs are then integrated together, 
+followed by the Leiden graph clustering using the integrative graph to generate draft viral genomes.
 
 ## Install and Setup
 ### conda
-We recommend using conda to run ViralCC.
+We recommend using conda to install ViralCC.
 
 After installing Anaconda (or miniconda), Users can clone the repository with git:
 ```
@@ -15,15 +17,15 @@ git clone https://github.com/dyxstat/ViralCC.git
 
 Once complete, you can enter the repository folder and then create a HiCBin environment using conda:
 ```
-# enter the HiCBin folder
-cd HiCBin
+# Enter the ViralCC folder
+cd ViralCC
 # Construct environment
 conda env create -f viralcc_linux_env.yaml
 or
 conda env create -f viralcc_osx_env.yaml
 # Enter the environment
-conda activate HiCBin_env
-
+conda activate ViralCC_env
+```
 
 ## Initial data preparation
 ### 1.Preprocess Raw reads
@@ -41,14 +43,10 @@ bwa mem -5SP final.contigs.fa hic_read1.fastq.gz hic_read2.fastq.gz > MAP.sam
 samtools view -F 0x904 -bS MAP.sam > MAP_UNSORTED.bam
 samtools sort MAP_UNSORTED.bam -o . > MAP_SORTED.bam
 ```
-### 4.Assign taxonomy to contigs by TAXAassign
-The taxonomic assignment of contigs was resolved using NCBI’s Taxonomy and its nt database by TAXAassign(v0.4) with parameters ‘-p -c 20 -r 10 -m 98 -q 98 -t 95 -a “60,70,80,95,95,98” -f’. 
-### 5.Calculate the coverage of assembled contigs
-Firstly, BBmap from the BBTools suite is applied to map the shotgun reads to the assembled contigs with parameters ‘bamscript=bs.sh; sh bs.sh’. The coverage of contigs is computed using script: ‘jgi summarize bam contig depths’ from MetaBAT2 v2.12.1.
-```
-bbmap.sh in1=SG1.fastq.gz in2=SG2.fastq.gz ref=final.contigs.fa out=SG_map.sam bamscript=bs.sh; sh bs.sh
-jgi_summarize_bam_contig_depths --outputDepth coverage.txt --pairedContigs pair.txt SG_map_sorted.bam
-```
+
+
+
+
 
 ## HiCBin analysis
 ### Implement the binning pipeline of HiCBin 
