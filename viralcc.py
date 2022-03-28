@@ -75,7 +75,7 @@ if __name__ == '__main__':
            
 
     '''
-    Testing of HiCBin software
+    Testing of ViralCC software
     '''
     cmd_test.add_argument('OUTDIR', help='Output directory of testing results')  
 
