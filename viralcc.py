@@ -65,7 +65,7 @@ if __name__ == '__main__':
     cmd_pl.add_argument('--min-match', type=int,
                            help='Accepted alignments must being N matches [30]')
     cmd_pl.add_argument('--min-k', type=int,
-                           help='Lower bound of k for determining host poximity graph [5]')
+                           help='Lower bound of k for determining host poximity graph [4]')
     cmd_pl.add_argument('--random-seed', type=int,
                            help='Random seed to run the Leiden algorithm [42]')
     cmd_pl.add_argument('FASTA', help='Reference fasta sequence')
