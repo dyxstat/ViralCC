@@ -41,7 +41,7 @@ Hi-C paired-end reads are aligned to assembled contigs using a DNA mapping softw
 bwa index final.contigs.fa
 bwa mem -5SP final.contigs.fa hic_read1.fastq.gz hic_read2.fastq.gz > MAP.sam
 samtools view -F 0x904 -bS MAP.sam > MAP_UNSORTED.bam
-samtools sort MAP_UNSORTED.bam -o MAP_SORTED.bam
+samtools sort -n MAP_UNSORTED.bam -o MAP_SORTED.bam
 ```
 ### Identify viral contigs from assembled contigs
 Assembled contigs were screened by a viral sequence detection software, such as VirSorter to identify viral contigs.
