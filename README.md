@@ -1,7 +1,7 @@
 # ViralCC: leveraging metagenomic proximity-ligation to retrieve complete viral genomes and reveal active co-host systems
 
 ## Introduction
-ViralCC is a new open-source metagenomic Hi-C-based binning pipeline to recover complete viral genomes and detect. 
+ViralCC is a new open-source metagenomic Hi-C-based binning pipeline to recover complete viral genomes and detect co-host systems. 
 ViralCC not only considers the Hi-C interaction graph, but also puts forward a novel host proximity graph of viral contigs 
 as a complementary source of information to the remarkably sparse Hi-C interaction map. The two graphs are then integrated together, 
 followed by the Leiden graph clustering using the integrative graph to generate draft viral genomes.
