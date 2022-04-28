@@ -91,10 +91,10 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 
 ### Example
 ```
-python ./viralcc.py pipeline -v final.contigs.fa MAP_SORTED.bam viral_contigs.txt out
+python ./viralcc.py pipeline -v Test/final.contigs.fa Test/MAP_SORTED.bam Test/viral_contigs.txt Test/out_test
 ```
 
-The results of the ViralCC software are all in the 'out' directory. The draft viral bins are in 'out/VIRAL_BIN' and 'viralcc.log' file contains the specific implementation information of ViralCC.
+The results of the ViralCC software on the test dataset are all in the 'Test/out_test' directory. The draft viral bins are in 'VIRAL_BIN' and 'viralcc.log' file contains the specific implementation information of ViralCC.
 
 
 ## Contacts and bug reports
