@@ -32,7 +32,7 @@ We provide a small simulated dataset, located under the Test directory, to demo 
 ```
 python ./viralcc.py pipeline Test/final.contigs.fa Test/MAP_SORTED.bam Test/viral_contigs.txt Test/out_test
 ```
-Results of the simulated dataset are in Test/out_test. 
+Results of ViralCC on the simulated dataset are in Test/out_test. 
 
 
 ## Initial data preparation
