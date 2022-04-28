@@ -52,9 +52,6 @@ if __name__ == '__main__':
     cmd_pl = subparsers.add_parser('pipeline', parents=[global_parser],
                                       description='Retrieve draft viral genomes.')
 
-    cmd_test = subparsers.add_parser('test', parents=[global_parser],
-                                        description='pipeline testing.')
-
     '''
     pipeline subparser input
     '''
@@ -148,11 +145,7 @@ if __name__ == '__main__':
             gen_bins(args.FASTA , os.path.join(args.OUTDIR ,'cluster_viral_contig.txt') , os.path.join(args.OUTDIR ,'VIRAL_BIN'))
             
             end_time = time.time()
-            logger.info('ViralCC consumes {} seconds in total'.format(str(end_time-start_time)))
-
-
-        if args.command == 'test':
-            logger.info('Begin to test the ViralCC software...')
+            logger.info('ViralCC consumes {} seconds in total'.format(str(end_time-start_time))
 
 
 
