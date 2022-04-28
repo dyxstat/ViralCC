@@ -71,11 +71,6 @@ if __name__ == '__main__':
     cmd_pl.add_argument('OUTDIR', help='Output directory')
            
 
-    '''
-    Testing of ViralCC software
-    '''
-    cmd_test.add_argument('OUTDIR', help='Output directory of testing results')  
-
     args = parser.parse_args()
 
     if args.version:
