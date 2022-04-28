@@ -53,6 +53,9 @@ class ClusterBin:
             for ci in range(len(part)):
                 for contig in part[ci]:
                     label_pred[contig] = ci
+                    
+            if len(set(label_pred)) == self.map_combine.shape[0]:
+                break
 
             SIL_score.append(silhouette_score(self.map_combine.todense() , np.array(label_pred)))
 
