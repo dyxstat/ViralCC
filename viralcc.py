@@ -50,7 +50,7 @@ if __name__ == '__main__':
                                        help='choose an analysis stage for further options')
 
     cmd_pl = subparsers.add_parser('pipeline', parents=[global_parser],
-                                      description='Normalize contacts and do the binning.')
+                                      description='Retrieve draft viral genomes.')
 
     cmd_test = subparsers.add_parser('test', parents=[global_parser],
                                         description='pipeline testing.')
