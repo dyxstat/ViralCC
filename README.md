@@ -19,13 +19,21 @@ Once complete, you can enter the repository folder and then create a ViralCC env
 ```
 # Enter the ViralCC folder
 cd ViralCC
-# Construct environment
+# Construct environment in the linux system
 conda env create -f viralcc_linux_env.yaml
-or
+or in the MacOS system
 conda env create -f viralcc_osx_env.yaml
 # Enter the environment
 conda activate ViralCC_env
 ```
+
+### Test dataset
+We provide a small simulated dataset, located under the Test directory, to demo and test the software:
+```
+python ./viralcc.py pipeline Test/final.contigs.fa Test/MAP_SORTED.bam Test/viral_contigs.txt Test/out_test
+```
+Results of the simulated dataset are in Test/out_test. 
+
 
 ## Initial data preparation
 ### Preprocess raw shotgun and Hi-C reads
@@ -65,20 +73,20 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 -v: Verbose output
 ```
 ### Input File
-```
-* FASTA_file: a fasta file of the assembled contig (e.g. final.contigs.fa)
-* BAM_file: a bam file of the Hi-C alignment (e.g. MAP_SORTED.bam)
-* VIRAL_file: a txt file containing the names of identified viral contigs in one column **without header** (e.g. viral_contigs.txt)
-```
+
+* FASTA_file: a fasta file of the assembled contig (e.g. Test/final.contigs.fa)
+* BAM_file: a bam file of the Hi-C alignment (e.g. Test/MAP_SORTED.bam)
+* VIRAL_file: a txt file containing the names of identified viral contigs in one column **without header** (e.g. Test/viral_contigs.txt)
+
 
 ### Output File
-```
+
 * VIRAL_BIN: folder containing the fasta files of draft viral bins
 * cluster_viral_contig.txt: clustering results with 2 columns, the first is the viral contig name, and the second is the group number.
 * viral_contig_info.csv: information of viral contigs with three columns (contig name, contig length, and GC-content)
 * prokaryotic_contig_info.csv: information of non-viral contigs with three columns (contig name, contig length, and GC-content)
 * viralcc.log: log file of ViralCC
-```
+
 
 
 ### Example
