@@ -4,7 +4,7 @@
 - [System Requirements](#system-requirements)
 - [Installation Guide](#installation-guide)
 - [A test dataset to demo ViralCC](#a-test-dataset-to-demo-viralcc)
-- [Instruction to prepare raw data](#instruction-to-prepare-raw-data)
+- [Instruction to process raw data](#instruction-to-process-raw-data)
 - [Instruction to run ViralCC](#instruction-to-run-viralcc)
 - [Contacts and bug reports](#contacts-and-bug-reports)
 - [Copyright and License Information](#copyright-and-license-information)
@@ -94,7 +94,7 @@ Test/out_test/viral_contig_info.csv
 
 
 
-# Instruction to prepare raw data
+# Instruction to process raw data
 Follow the instructions in this section to process the raw shotgun and Hi-C data and generate the input for `ViralCC`:
 
 ### Clean raw shotgun and Hi-C reads
