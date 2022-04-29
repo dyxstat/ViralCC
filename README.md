@@ -4,8 +4,8 @@
 - [System Requirements](#system-requirements)
 - [Installation Guide](#installation-guide)
 - [A test dataset to demo ViralCC](#a-test-dataset-to-demo-viralcc)
-- [Raw data preparation](#raw-data-preparation)
-- [Implement the ViralCC pipeline](#implement-the-viralcc-pipeline)
+- [Instruction to prepare raw data](#instruction-to-prepare-raw-data)
+- [Instruction to run ViralCC](#instruction-to-run-viralcc)
 - [Contacts and bug reports](#contacts-and-bug-reports)
 - [Copyright and License Information](#copyright-and-license-information)
 - [Issues](https://github.com/dyxstat/ViralCC/issues)
@@ -94,7 +94,7 @@ Test/out_test/viral_contig_info.csv
 
 
 
-# Raw data preparation
+# Instruction to prepare raw data
 Follow the instructions in this section to process the raw shotgun and Hi-C data and generate the input for ViralCC:
 
 ## Clean raw shotgun and Hi-C reads
@@ -121,7 +121,7 @@ wrapper_phage_contigs_sorter_iPlant.pl -f final.contigs.fa --db 1 --wdir virsort
 ```
 
 
-# Implement the ViralCC pipeline
+# Instruction to run ViralCC
 ```
 python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_directory
 ```
