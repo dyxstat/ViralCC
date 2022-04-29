@@ -1,8 +1,5 @@
 # ViralCC: leveraging metagenomic proximity-ligation to retrieve complete viral genomes and reveal active co-host systems
 
-![DOI](https://zenodo.org/badge/147731955.svg)
-![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
-
 - [Overview](#overview)
 - [System Requirements](#system-requirements)
 - [Installation Guide](#installation-guide)
