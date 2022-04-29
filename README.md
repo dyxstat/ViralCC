@@ -48,7 +48,7 @@ Typical installation time is 1-5 minutes depending on your system.
 git clone https://github.com/dyxstat/ViralCC.git
 ```
 
-Once complete, enter the repository folder and then create a ViralCC environment using conda.
+Once complete, enter the repository folder and then create a `ViralCC` environment using conda.
 
 
 ### Enter the ViralCC folder:
