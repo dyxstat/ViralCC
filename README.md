@@ -43,7 +43,7 @@ leidenalg
 We recommend using [**conda**](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html) to install `ViralCC`. 
 Typical installation time is 1-5 minutes depending on your system.
 
-**Clone the repository with git:**
+### Clone the repository with git:
 ```
 git clone https://github.com/dyxstat/ViralCC.git
 ```
@@ -51,12 +51,12 @@ git clone https://github.com/dyxstat/ViralCC.git
 Once complete, enter the repository folder and then create a ViralCC environment using conda.
 
 
-**Enter the ViralCC folder:**
+### Enter the ViralCC folder:
 ```
 cd ViralCC
 ```
 
-**Construct environment in the linux or MacOS system:**
+### Construct environment in the linux or MacOS system:
 ```
 conda env create -f viralcc_linux_env.yaml
 ```
@@ -65,7 +65,7 @@ or
 conda env create -f viralcc_osx_env.yaml
 ```
 
-**Enter the environment:**
+### Enter the environment:
 ```
 conda activate ViralCC_env
 ```
@@ -77,7 +77,7 @@ Test/final.contigs.fa
 Test/MAP_SORTED.bam
 Test/viral_contigs.txt
 ```
-Run ViralCC on the testing dataset:
+Run `ViralCC` on the testing dataset:
 ```
 python ./viralcc.py pipeline Test/final.contigs.fa Test/MAP_SORTED.bam Test/viral_contigs.txt Test/out_test
 ```
@@ -95,18 +95,21 @@ Test/out_test/viral_contig_info.csv
 
 
 # Instruction to prepare raw data
-Follow the instructions in this section to process the raw shotgun and Hi-C data and generate the input for ViralCC:
+Follow the instructions in this section to process the raw shotgun and Hi-C data and generate the input for `ViralCC`:
 
-## Clean raw shotgun and Hi-C reads
+### Clean raw shotgun and Hi-C reads
+
 Adaptor sequences are removed by `bbduk` from the `BBTools` suite with parameter `ktrim=r k=23 mink=11 hdist=1 minlen=50 tpe tbo` and reads are quality-trimmed using `bbduk` with parameters `trimq=10 qtrim=r ftm=5 minlen=50`. Additionally, the first 10 nucleotides of Hi-C reads are trimmed by `bbduk` with parameter `ftl=10`. Identical PCR optical and tile-edge duplicates for Hi-C reads were removed by the script `clumpify.sh` from `BBTools` suite.
 
-## Assemble shotgun reads
+### Assemble shotgun reads
+
 For the shotgun library, de novo metagenome assembly is produced by an assembly software, such as MEGAHIT.
 ```
 megahit -1 SG1.fastq.gz -2 SG2.fastq.gz -o ASSEMBLY --min-contig-len 1000 --k-min 21 --k-max 141 --k-step 12 --merge-level 20,0.95
 ```
 
-## Align Hi-C paired-end reads to assembled contigs
+### Align Hi-C paired-end reads to assembled contigs
+
 Hi-C paired-end reads are aligned to assembled contigs using a DNA mapping software, such as BWA MEM. Then, samtools with parameters ‘view -F 0x904’ is applied to remove unmapped reads, supplementary alignments, and secondary alignments. BAM file needs to be sorted **by name** using 'samtools sort'.
 ```
 bwa index final.contigs.fa
@@ -114,7 +117,8 @@ bwa mem -5SP final.contigs.fa hic_read1.fastq.gz hic_read2.fastq.gz > MAP.sam
 samtools view -F 0x904 -bS MAP.sam > MAP_UNSORTED.bam
 samtools sort -n MAP_UNSORTED.bam -o MAP_SORTED.bam
 ```
-## Identify viral contigs from assembled contigs
+### Identify viral contigs from assembled contigs
+
 Assembled contigs were screened by a viral sequence detection software, such as VirSorter to identify viral contigs.
 ```
 wrapper_phage_contigs_sorter_iPlant.pl -f final.contigs.fa --db 1 --wdir virsorter_output --data-dir virsorter-data
@@ -125,7 +129,7 @@ wrapper_phage_contigs_sorter_iPlant.pl -f final.contigs.fa --db 1 --wdir virsort
 ```
 python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_directory
 ```
-## Parameters
+### Parameters
 ```
 --min-len: Minimum acceptable contig length (default 1000)
 --min-mapq: Minimum acceptable alignment quality (default 30)
@@ -135,14 +139,14 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 --cover: Cover existing files
 -v: Verbose output
 ```
-## Input File
+### Input File
 
 * FASTA_file: a fasta file of the assembled contig (e.g. Test/final.contigs.fa)
 * BAM_file: a bam file of the Hi-C alignment (e.g. Test/MAP_SORTED.bam)
 * VIRAL_file: a txt file containing the names of identified viral contigs in one column **without header** (e.g. Test/viral_contigs.txt)
 
 
-## Output File
+### Output File
 
 * VIRAL_BIN: folder containing the fasta files of draft viral bins
 * cluster_viral_contig.txt: clustering results with 2 columns, the first is the viral contig name, and the second is the group number.
