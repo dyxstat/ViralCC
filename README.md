@@ -6,6 +6,7 @@
 - [A test dataset to demo ViralCC](#a-test-dataset-to-demo-viralcc)
 - [Instruction to process raw data](#instruction-to-process-raw-data)
 - [Instruction to run ViralCC](#instruction-to-run-viralcc)
+- [Instruction of reproducing results in ViralCC paper](#instruction-of-reproducing-results-in-viralcc-paper)
 - [Contacts and bug reports](#contacts-and-bug-reports)
 - [Copyright and License Information](#copyright-and-license-information)
 - [Issues](https://github.com/dyxstat/ViralCC/issues)
@@ -154,6 +155,9 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 * prokaryotic_contig_info.csv: information of non-viral contigs with three columns (contig name, contig length, and GC-content)
 * viralcc.log: log file of ViralCC
 
+
+
+# Instruction of reproducing results in ViralCC paper
 
 
 
