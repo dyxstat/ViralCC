@@ -6,7 +6,7 @@
 - [A test dataset to demo ViralCC](#a-test-dataset-to-demo-viralcc)
 - [Instruction to process raw data](#instruction-to-process-raw-data)
 - [Instruction to run ViralCC](#instruction-to-run-viralcc)
-- [Instruction of reproducing results in ViralCC paper](#instruction-of-reproducing-results-in-viralcc-paper)
+- [Instruction of reproducing results in ViralCC paper](https://github.com/dyxstat/Reproduce_ViralCC)
 - [Contacts and bug reports](#contacts-and-bug-reports)
 - [Copyright and License Information](#copyright-and-license-information)
 - [Issues](https://github.com/dyxstat/ViralCC/issues)
@@ -17,6 +17,7 @@
 as a complementary source of information to the remarkably sparse Hi-C interaction map. The two graphs are then integrated together, 
 followed by the Leiden graph clustering using the integrative graph to generate draft viral genomes.
 
+**If you want to reproduce results in our ViralCC paper, please read our instructions [here](https://github.com/dyxstat/Reproduce_ViralCC).**
 
 # System Requirements
 ## Hardware requirements
@@ -154,11 +155,6 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 * viral_contig_info.csv: information of viral contigs with three columns (contig name, contig length, and GC-content)
 * prokaryotic_contig_info.csv: information of non-viral contigs with three columns (contig name, contig length, and GC-content)
 * viralcc.log: log file of ViralCC
-
-
-
-# Instruction of reproducing results in ViralCC paper
-
 
 
 # Contacts and bug reports
