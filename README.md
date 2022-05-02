@@ -81,7 +81,7 @@ Test/viral_contigs.txt
 ```
 Run `ViralCC` on the testing dataset:
 ```
-python ./viralcc.py pipeline Test/final.contigs.fa Test/MAP_SORTED.bam Test/viral_contigs.txt Test/out_test
+python ./viralcc.py pipeline -v Test/final.contigs.fa Test/MAP_SORTED.bam Test/viral_contigs.txt Test/out_test
 ```
 
 The expected run time for demo is several seconds and the expected output are in the 'Test/out_test' directory:
@@ -138,8 +138,8 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 --min-match: Accepted alignments must be at least N matches (default 30)
 --min-k: Lower bound of k for determining the host poximity graph (default 4)
 --random-seed: Random seed for the Leiden clustering (default 42)
---cover: Cover existing files
--v: Verbose output
+--cover: Cover existing files. Otherwise, an error will be returned if the output file is detected to exist.
+-v: Verbose output about more specific details of the ViralCC procedure.
 ```
 ### Input File
 
