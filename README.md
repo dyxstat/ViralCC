@@ -138,8 +138,8 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 --min-match: Accepted alignments must be at least N matches (default 30)
 --min-k: Lower bound of k for determining the host poximity graph (default 4)
 --random-seed: Random seed for the Leiden clustering (default 42)
---cover: Cover existing files. Otherwise, an error will be returned if the output file is detected to exist.
--v: Verbose output about more specific details of the ViralCC procedure.
+--cover (optional): Cover existing files. Otherwise, an error will be returned if the output file is detected to exist.
+-v (optional): Verbose output about more specific details of the ViralCC procedure.
 ```
 ### Input File
 
@@ -156,6 +156,10 @@ python ./viralcc.py pipeline [Parameters] FASTA_file BAM_file VIRAL_file OUTPUT_
 * prokaryotic_contig_info.csv: information of non-viral contigs with three columns (contig name, contig length, and GC-content)
 * viralcc.log: log file of ViralCC
 
+### Example
+```
+python ./viralcc.py pipeline -v final.contigs.fa MAP_SORTED.bam viral_contigs.txt out_test
+```
 
 # Contacts and bug reports
 If you have any questions or suggestions, welcome to contact Yuxuan Du (yuxuandu@usc.edu).
