@@ -1,4 +1,4 @@
-# ViralCC: leveraging metagenomic proximity-ligation to retrieve complete viral genomes and reveal active co-host systems
+# ViralCC: leveraging metagenomic proximity-ligation to retrieve complete viral genomes
 
 - [Overview](#overview)
 - [System Requirements](#system-requirements)
