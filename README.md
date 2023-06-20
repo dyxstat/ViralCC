@@ -19,8 +19,6 @@ followed by the Leiden graph clustering using the integrative graph to generate 
 
 * **If you want to reproduce results in our ViralCC paper, please read our instructions [here](https://github.com/dyxstat/Reproduce_ViralCC).**
 
-* **Source data of Figure 2 and 3 in the main text of our ViralCC paper and Figure S1 in the supplementary materials are provided [here](https://github.com/dyxstat/Reproduce_ViralCC/tree/main/Source%20Data).**
-
 * **Scripts to process the intermediate data and plot figures of our ViralCC paper are available [here](https://github.com/dyxstat/Reproduce_ViralCC/tree/main/Scripts).**
 
 # System Requirements
