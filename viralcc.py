@@ -32,6 +32,7 @@ if __name__ == '__main__':
 
     runtime_defaults = {
         'min_len': 1000,
+        'min_signal': 1,
         'min_mapq': 30,
         'min_match': 30,
         'min_k': 4,
