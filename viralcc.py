@@ -1,4 +1,5 @@
 #########The structure of the main script is modified from bin3C########
+from raw_contact import RawContact
 from construct_graph import ContactMatrix
 from bin import ClusterBin
 from exceptions import ApplicationException
@@ -48,9 +49,30 @@ if __name__ == '__main__':
 
     subparsers = parser.add_subparsers(title='commands', dest='command', description='Valid commands',
                                        help='choose an analysis stage for further options')
+    cm_raw = subparsers.add_parser('raw', parents=[global_parser],
+                                      description='Raw contacts.')
 
     cmd_pl = subparsers.add_parser('pipeline', parents=[global_parser],
                                       description='Retrieve complete viral genomes.')
+
+
+    '''
+    Generating raw contacts subparser input
+    '''
+    cmd_raw.add_argument('--min-len', type=int,
+                           help='Minimum acceptable contig length [1000]')
+    cmd_raw.add_argument('--min-signal', type=int,
+                           help='Minimum acceptable Hi-C signal [1]')
+    cmd_raw.add_argument('--min-mapq', type=int,
+                           help='Minimum acceptable mapping quality [30]')
+    cmd_raw.add_argument('--min-match', type=int,
+                           help='Accepted alignments must being N matches [30]')
+    cmd_raw.add_argument('-e', '--enzyme', metavar='NEB_NAME', action='append',
+                           help='Case-sensitive enzyme name. Use multiple times for multiple enzymes')
+    cmd_raw.add_argument('FASTA', help='Reference fasta sequence')
+    cmd_raw.add_argument('BAM', help='Input bam file in query order')
+    cmd_raw.add_argument('OUTDIR', help='Output directory')
+
 
     '''
     pipeline subparser input
@@ -118,6 +140,20 @@ if __name__ == '__main__':
     logger.debug('Command line: {}'.format(' '.join(sys.argv)))
 
     try:
+        if args.command == 'raw':
+            if args.enzyme is not None:
+                logger.info('Begin constructing raw contact matrix...')
+                cm = RawContact(args.BAM,
+                                args.enzyme,
+                                args.FASTA,
+                                args.OUTDIR,
+                                min_mapq=ifelse(args.min_mapq, runtime_defaults['min_mapq']),
+                                min_len=ifelse(args.min_len, runtime_defaults['min_len']),
+                                min_match=ifelse(args.min_match, runtime_defaults['min_match']),
+                                min_signal=ifelse(args.min_signal, runtime_defaults['min_signal']))
+
+                logger.info('Raw contact matrix construction finished')
+                
         if args.command == 'pipeline':
             start_time = time.time()
             cm = ContactMatrix(args.BAM,
