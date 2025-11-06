@@ -1,5 +1,5 @@
 #########The structure of the main script is modified from bin3C########
-from raw_contact import RawContact
+from raw_contact import ContactMatrix as RawContact
 from construct_graph import ContactMatrix
 from bin import ClusterBin
 from exceptions import ApplicationException
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     subparsers = parser.add_subparsers(title='commands', dest='command', description='Valid commands',
                                        help='choose an analysis stage for further options')
-    cm_raw = subparsers.add_parser('raw', parents=[global_parser],
+    cmd_raw = subparsers.add_parser('raw', parents=[global_parser],
                                       description='Raw contacts.')
 
     cmd_pl = subparsers.add_parser('pipeline', parents=[global_parser],
