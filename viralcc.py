@@ -55,7 +55,9 @@ if __name__ == '__main__':
 
     cmd_pl = subparsers.add_parser('pipeline', parents=[global_parser],
                                       description='Retrieve complete viral genomes.')
-
+    
+    cmd_link = subparsers.add_parser('link', parents=[global_parser],
+                                      description='Find MGE-host linkages from contact matrix.')
 
     '''
     Generating raw contacts subparser input
@@ -92,7 +94,23 @@ if __name__ == '__main__':
     cmd_pl.add_argument('BAM', help='Input bam file in query order')
     cmd_pl.add_argument('VIRAL', help='Viral contig labels')
     cmd_pl.add_argument('OUTDIR', help='Output directory')
-           
+    
+    '''
+    link subparser input
+    '''
+    cmd_link.add_argument('--viral-bin', required=True,
+                          help='Viral bin folder (ViralCC output)')
+    cmd_link.add_argument('--host-bin', required=True,
+                          help='Host bin folder')
+    cmd_link.add_argument('--contact', required=True,
+                          help='Contact matrix file (npz format)')
+    cmd_link.add_argument('--contig-info', required=True,
+                          help='Contig information file')
+    cmd_link.add_argument('--viral-annotation', default=None,
+                          help='Optional: Viral bin annotation (VIRGO output)')
+    cmd_link.add_argument('--host-annotation', default=None,
+                          help='Optional: Host bin annotation (GTDBTK output)')
+    cmd_link.add_argument('OUTDIR', help='Output directory')
 
     args = parser.parse_args()
 
@@ -179,10 +197,135 @@ if __name__ == '__main__':
             end_time = time.time()
             logger.info('ViralCC consumes {} seconds in total'.format(str(end_time-start_time)))
 
-
+        if args.command == 'link':
+            logger.info('Begin finding MGE-host linkages...')
+            
+            import pandas as pd
+            import numpy as np
+            from scipy.sparse import load_npz
+            from Bio import SeqIO
+            import glob
+            
+            # Load contact matrix
+            logger.info('Loading contact matrix...')
+            contact_matrix = load_npz(args.contact).tocoo()
+            
+            # Read contig information to map indices to contig names
+            logger.info('Reading contig information...')
+            contig_names = []
+            with open(args.contig_info, 'r') as f:
+                for line in f:
+                    if line.startswith('>'):
+                        contig_names.append(line[1:].split()[0])
+            
+            # Get viral contigs from viral bin folder
+            logger.info('Identifying viral contigs...')
+            viral_contigs = set()
+            viral_bin_files = glob.glob(os.path.join(args.viral_bin, '*.fa')) + \
+                             glob.glob(os.path.join(args.viral_bin, '*.fasta'))
+            for bin_file in viral_bin_files:
+                for record in SeqIO.parse(bin_file, 'fasta'):
+                    viral_contigs.add(record.id)
+            
+            logger.info('Found {} viral contigs'.format(len(viral_contigs)))
+            
+            # Get host contigs from host bin folder
+            logger.info('Identifying host contigs...')
+            host_contigs = set()
+            host_bin_files = glob.glob(os.path.join(args.host_bin, '*.fa')) + \
+                            glob.glob(os.path.join(args.host_bin, '*.fasta'))
+            for bin_file in host_bin_files:
+                for record in SeqIO.parse(bin_file, 'fasta'):
+                    host_contigs.add(record.id)
+            
+            logger.info('Found {} host contigs'.format(len(host_contigs)))
+            
+            # Load optional annotations
+            viral_annotations = {}
+            host_annotations = {}
+            
+            if args.viral_annotation is not None:
+                logger.info('Loading viral annotations...')
+                # Assuming VIRGO output format - adjust as needed
+                try:
+                    virgo_df = pd.read_csv(args.viral_annotation, sep='\t')
+                    # Adjust column names based on actual VIRGO output format
+                    if 'contig_id' in virgo_df.columns and 'annotation' in virgo_df.columns:
+                        viral_annotations = dict(zip(virgo_df['contig_id'], virgo_df['annotation']))
+                    logger.info('Loaded {} viral annotations'.format(len(viral_annotations)))
+                except Exception as e:
+                    logger.warning('Failed to load viral annotations: {}'.format(str(e)))
+            
+            if args.host_annotation is not None:
+                logger.info('Loading host annotations...')
+                # Assuming GTDBTK output format - adjust as needed
+                try:
+                    gtdbtk_df = pd.read_csv(args.host_annotation, sep='\t')
+                    # Adjust column names based on actual GTDBTK output format
+                    if 'user_genome' in gtdbtk_df.columns and 'classification' in gtdbtk_df.columns:
+                        host_annotations = dict(zip(gtdbtk_df['user_genome'], gtdbtk_df['classification']))
+                    logger.info('Loaded {} host annotations'.format(len(host_annotations)))
+                except Exception as e:
+                    logger.warning('Failed to load host annotations: {}'.format(str(e)))
+            
+            # Extract virus-host linkages
+            logger.info('Extracting virus-host linkages...')
+            linkages = []
+            
+            for r, c, v in zip(contact_matrix.row, contact_matrix.col, contact_matrix.data):
+                if v <= 0:
+                    continue
+                
+                contig_a = contig_names[r]
+                contig_b = contig_names[c]
+                
+                # Check if one is viral and one is host
+                if contig_a in viral_contigs and contig_b in host_contigs:
+                    linkage = {
+                        'viral_contig': contig_a,
+                        'host_contig': contig_b,
+                        'contact_strength': int(v)
+                    }
+                    if viral_annotations:
+                        linkage['viral_annotation'] = viral_annotations.get(contig_a, '')
+                    if host_annotations:
+                        linkage['host_annotation'] = host_annotations.get(contig_b, '')
+                    linkages.append(linkage)
+                    
+                elif contig_b in viral_contigs and contig_a in host_contigs:
+                    linkage = {
+                        'viral_contig': contig_b,
+                        'host_contig': contig_a,
+                        'contact_strength': int(v)
+                    }
+                    if viral_annotations:
+                        linkage['viral_annotation'] = viral_annotations.get(contig_b, '')
+                    if host_annotations:
+                        linkage['host_annotation'] = host_annotations.get(contig_a, '')
+                    linkages.append(linkage)
+            
+            # Create DataFrame and save
+            logger.info('Creating output table...')
+            linkages_df = pd.DataFrame(linkages)
+            
+            if len(linkages_df) > 0:
+                # Sort by contact strength
+                linkages_df = linkages_df.sort_values('contact_strength', ascending=False)
+                
+                # Save to output
+                output_file = os.path.join(args.OUTDIR, 'virus_host_linkages.tsv')
+                linkages_df.to_csv(output_file, sep='\t', index=False)
+                
+                logger.info('Found {} virus-host linkages'.format(len(linkages_df)))
+                logger.info('Unique viral contigs with hosts: {}'.format(linkages_df['viral_contig'].nunique()))
+                logger.info('Unique host contigs with viruses: {}'.format(linkages_df['host_contig'].nunique()))
+                logger.info('Output saved to: {}'.format(output_file))
+            else:
+                logger.warning('No virus-host linkages found')
+            
+            logger.info('MGE-host linkage analysis completed')
 
 
     except ApplicationException:
         logger.error('ApplicationException Error')
         sys.exit(1)
-
