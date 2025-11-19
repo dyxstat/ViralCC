@@ -53,7 +53,7 @@ if __name__ == '__main__':
     cmd_raw = subparsers.add_parser('raw', parents=[global_parser],
                                       description='Raw contacts.')
 
-    cmd_pl = subparsers.add_parser('pipeline', parents=[global_parser],
+    cmd_pl = subparsers.add_parser('bin', parents=[global_parser],
                                       description='Retrieve complete viral genomes.')
     
     cmd_link = subparsers.add_parser('link', parents=[global_parser],
@@ -173,7 +173,7 @@ if __name__ == '__main__':
 
                 logger.info('Raw contact matrix construction finished')
                 
-        if args.command == 'pipeline':
+        if args.command == 'bin':
             start_time = time.time()
             cm = ContactMatrix(args.BAM,
                                 args.FASTA,
