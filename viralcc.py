@@ -212,11 +212,9 @@ if __name__ == '__main__':
             
             # Read contig information to map indices to contig names
             logger.info('Reading contig information...')
-            contig_names = []
-            with open(args.contig_info, 'r') as f:
-                for line in f:
-                    if line.startswith('>'):
-                        contig_names.append(line[1:].split()[0])
+            contig_df = pd.read_csv(args.contig_info)
+            contig_names = contig_df['Contig name'].tolist()
+            logger.info(f'Loaded {len(contig_names)} contig names')
             
             # Get viral contigs from viral bin folder
             logger.info('Identifying viral contigs...')
@@ -250,8 +248,8 @@ if __name__ == '__main__':
                 try:
                     virgo_df = pd.read_csv(args.viral_annotation, sep='\t')
                     # Adjust column names based on actual VIRGO output format
-                    if 'contig_id' in virgo_df.columns and 'annotation' in virgo_df.columns:
-                        viral_annotations = dict(zip(virgo_df['contig_id'], virgo_df['annotation']))
+                    if 'id' in virgo_df.columns and 'Family' in virgo_df.columns:
+                        viral_annotations = dict(zip(virgo_df['id'], virgo_df['Family']))
                     logger.info('Loaded {} viral annotations'.format(len(viral_annotations)))
                 except Exception as e:
                     logger.warning('Failed to load viral annotations: {}'.format(str(e)))
@@ -286,10 +284,10 @@ if __name__ == '__main__':
                         'host_contig': contig_b,
                         'contact_strength': int(v)
                     }
-                    if viral_annotations:
-                        linkage['viral_annotation'] = viral_annotations.get(contig_a, '')
-                    if host_annotations:
-                        linkage['host_annotation'] = host_annotations.get(contig_b, '')
+                    # if viral_annotations:
+                    #     linkage['viral_annotation'] = viral_annotations.get(contig_a, '')
+                    # if host_annotations:
+                    #     linkage['host_annotation'] = host_annotations.get(contig_b, '')
                     linkages.append(linkage)
                     
                 elif contig_b in viral_contigs and contig_a in host_contigs:
@@ -298,10 +296,10 @@ if __name__ == '__main__':
                         'host_contig': contig_a,
                         'contact_strength': int(v)
                     }
-                    if viral_annotations:
-                        linkage['viral_annotation'] = viral_annotations.get(contig_b, '')
-                    if host_annotations:
-                        linkage['host_annotation'] = host_annotations.get(contig_a, '')
+                    # if viral_annotations:
+                    #     linkage['viral_annotation'] = viral_annotations.get(contig_b, '')
+                    # if host_annotations:
+                    #     linkage['host_annotation'] = host_annotations.get(contig_a, '')
                     linkages.append(linkage)
             
             # Create DataFrame and save

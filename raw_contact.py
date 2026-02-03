@@ -352,6 +352,8 @@ class ContactMatrix:
 
 
     def _write_contig_info(self):
+        tmp_dir = os.path.join(self.path, 'tmp')
+        os.makedirs(tmp_dir, exist_ok=True)
         with open(os.path.join(self.path , 'tmp' , 'contig_info.csv'),'w') as out:
             for i , seq in enumerate(self.seq_info):
                 out.write(str(seq.name)+ ',' +str(seq.sites)+ ',' +str(seq.length) + ',' +str(seq.covcc) + ',' + str(self.row_sum[i]))
